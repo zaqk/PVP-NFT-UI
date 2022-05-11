@@ -59,19 +59,27 @@ export class State extends Schema {
       }
 
       if (entity.speed > 0) {
-        entity.x -= entity.x !== entity.moveToX ? (Math.cos(entity.angle)) * entity.speed : entity.x;
-        entity.y -= entity.y !== entity.moveToY ? (Math.sin(entity.angle)) * entity.speed : entity.y;
+        const isAtPoint = Entity.distanceToPoint(entity) <= entity.radius;
 
-        // apply boundary limits
+        // check if entity has hit point, if so stop moving, else keep it moving
+        if (isAtPoint) {
+          entity.speed = 0;
+        } else {
+          entity.x -= (Math.cos(entity.angle)) * entity.speed;
+          entity.y -= (Math.sin(entity.angle)) * entity.speed;
+        }
+
+        // apply boundary limits to x and y
         if (entity.x < 0) { entity.x = 0; }
         if (entity.x > WORLD_SIZE) { entity.x = WORLD_SIZE; }
         if (entity.y < 0) { entity.y = 0; }
         if (entity.y > WORLD_SIZE) { entity.y = WORLD_SIZE; }
 
-        // check if entity has hit point, if so stop moving
-        if (Entity.distanceToPoint(entity) <= entity.radius) {
-          entity.speed = 0;
-        }
+        // apply boundary limits to x and y moveTo point
+        if (entity.moveToX < 0) { entity.moveToX = 0; }
+        if (entity.moveToX > WORLD_SIZE) { entity.moveToX = WORLD_SIZE; }
+        if (entity.moveToY < 0) { entity.moveToY = 0; }
+        if (entity.moveToY > WORLD_SIZE) { entity.moveToY = WORLD_SIZE; }
 
       } else {
         //
