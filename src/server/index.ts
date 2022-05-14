@@ -24,8 +24,7 @@ export let STATIC_DIR: string;
 
 const app = express();
 const gameServer = new Server({
-  server: http.createServer(app),
-  express: app
+  server: http.createServer(app)
 });
 
 gameServer.define("arena", ArenaRoom);

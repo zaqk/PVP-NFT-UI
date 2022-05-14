@@ -6,7 +6,8 @@
   "scripts": {
     "schema-codegen": "schema-codegen src/server/rooms/*.ts --ts --output src/client/schema/",
     "heroku-postbuild": "tsc && webpack",
-    "start": "ts-node-dev --respawn --transpile-only src/server/index.ts"
+    "start": "node ./lib/index.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/server/index.ts"
   },
   "author": "Endel Dreyer",
   "license": "MIT",
