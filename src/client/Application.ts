@@ -3,7 +3,9 @@ import * as Viewport from "pixi-viewport";
 import { Room, Client } from "colyseus.js";
 import { State } from "../server/rooms/State";
 
-const ENDPOINT = "ws://localhost:8080"
+const ENDPOINT = (process.env.NODE_ENV==="development")
+    ? "ws://localhost:8080"
+    : "wss://contract-playground.herokuapp.com";
 
 const WORLD_SIZE = 2000;
 
