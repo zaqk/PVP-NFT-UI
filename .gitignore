@@ -1,5 +1,21 @@
+# general
+.env
+
+# frontend
 node_modules
-.DS_Store
-/public
-*.log
-lib
+deployments
+
+
+# backend
+migrations
+dev.db
+dev.db-journal
+
+# hardhat
+artifacts
+cache
+
+#vscode
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/settings.json

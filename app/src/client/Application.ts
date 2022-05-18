@@ -51,6 +51,10 @@ export class Application extends PIXI.Application {
         this.viewport.on("click", (e) => {
             if (this.currentPlayerEntity) {
                 const point = this.viewport.toLocal(e.data.global);
+
+                
+
+
                 this.room.send('moveTo', { x: point.x, y: point.y });
             }
         });
