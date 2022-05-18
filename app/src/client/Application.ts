@@ -11,9 +11,17 @@ const WORLD_SIZE = 2000;
 
 export const lerp = (a: number, b: number, t: number) => (b - a) * t + a
 
+const onAttack = (event:any) => {
+    console.log(event)
+}
+
+class PlayerEntity extends PIXI.Graphics {
+    id:string
+}
+
 export class Application extends PIXI.Application {
-    entities: { [id: string]: PIXI.Graphics } = {};
-    currentPlayerEntity: PIXI.Graphics;
+    entities: { [id: string]: PlayerEntity } = {};
+    currentPlayerEntity: PlayerEntity;
 
     client = new Client(ENDPOINT);
     room: Room<State>;
@@ -36,7 +44,7 @@ export class Application extends PIXI.Application {
         });
 
         // draw boundaries of the world
-        const boundaries = new PIXI.Graphics();
+        const boundaries = new PlayerEntity();
         boundaries.beginFill(0x000000);
         boundaries.drawRoundedRect(0, 0, WORLD_SIZE, WORLD_SIZE, 30);
         this.viewport.addChild(boundaries);
@@ -49,12 +57,9 @@ export class Application extends PIXI.Application {
         this.interpolation = false;
 
         this.viewport.on("click", (e) => {
+            console.log(`viewport click caught`)
             if (this.currentPlayerEntity) {
                 const point = this.viewport.toLocal(e.data.global);
-
-                
-
-
                 this.room.send('moveTo', { x: point.x, y: point.y });
             }
         });
@@ -68,7 +73,7 @@ export class Application extends PIXI.Application {
                 ? 0xff0000
                 : 0xFFFF0B;
 
-            const graphics = new PIXI.Graphics();
+            const graphics = new PlayerEntity();
             graphics.lineStyle(0);
             graphics.beginFill(color, 0.5);
             graphics.drawCircle(0, 0, entity.radius);
@@ -76,6 +81,14 @@ export class Application extends PIXI.Application {
 
             graphics.x = entity.x;
             graphics.y = entity.y;
+            graphics.interactive = true;
+            graphics.on('pointerup', (e) => {
+                e.stopPropagation() // prevent movement from viewport onclick
+                console.log(this.currentPlayerEntity)
+                console.log(e)
+                console.log('clicked on player')
+            });
+            graphics.id = sessionId
             this.viewport.addChild(graphics);
 
             this.entities[sessionId] = graphics;
