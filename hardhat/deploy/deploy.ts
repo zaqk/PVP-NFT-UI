@@ -8,7 +8,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const {deployer} = await getNamedAccounts();
   const chainId = await hre.getChainId();
 
-  let api = chainId === '31337' ? 'http://localhost:8080' : 'tbd';
+  let api = chainId === '31337' ? 
+  'http://localhost:8080/api/turing-proximity' : // local
+  'https://contract-playground.herokuapp.com/api/turing-proximity'; // testnet
 
   const turingHelperInfo = await deploy('TuringHelper', {
     from: deployer,
