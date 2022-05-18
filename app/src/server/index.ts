@@ -16,6 +16,9 @@ import path from "path";
 
 import { ArenaRoom } from "./rooms/ArenaRoom";
 
+import api from './api/index';
+import presence from "./presence";
+
 export const port = Number(process.env.PORT || 8080);
 export const endpoint = "localhost";
 
@@ -23,7 +26,8 @@ export let STATIC_DIR: string;
 
 const app = express();
 const gameServer = new Server({
-  server: http.createServer(app)
+    presence,
+    server: http.createServer(app)
 });
 
 gameServer.define("arena", ArenaRoom);
@@ -42,6 +46,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 app.use("/", express.static(STATIC_DIR));
+app.use(api);
 
 gameServer.listen(port);
 console.log(`Listening on http://${endpoint}:${port}`);
