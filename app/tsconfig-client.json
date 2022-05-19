@@ -8,7 +8,8 @@
         "target": "es5",
         "declaration": true,
         "noImplicitAny": false,
-        "sourceMap": false
+        "sourceMap": false,
+        "resolveJsonModule": true
     },
     "include": [
       "src/client/**/*.ts",

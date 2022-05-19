@@ -43,10 +43,11 @@ export class State extends Schema {
     this.entities.set(generateId(), food);
   }
 
-  createPlayer(sessionId: string) {
+  createPlayer(sessionId: string, tokenId: number) {
     this.entities.set(sessionId, new Player().assign({
       x: Math.random() * this.width,
-      y: Math.random() * this.height
+      y: Math.random() * this.height,
+      tokenId,
     }));
   }
 

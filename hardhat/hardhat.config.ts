@@ -1,6 +1,7 @@
 import 'hardhat-deploy'
 import { HardhatUserConfig } from 'hardhat/types'
 import * as dotenv from "dotenv";
+import "@nomiclabs/hardhat-ethers";
 
 dotenv.config()
 

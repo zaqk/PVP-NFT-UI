@@ -21,10 +21,14 @@ window.onresize = () => {
     app.renderer.resize(window.innerWidth, window.innerHeight);
 }
 // toggle interpolation
-document.addEventListener("click", (e) => {
+document.addEventListener("click", async (e) => {
     const el = e.target as HTMLElement;
 
     if (el.id === "interpolation") {
         app.interpolation = (el as HTMLInputElement).checked;
+    }
+
+    if (el.id === "mint") {
+        await app.connect();
     }
 });

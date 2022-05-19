@@ -33,9 +33,9 @@ export class ArenaRoom extends Room<State> {
     this.setSimulationInterval(() => this.state.update());
   }
 
-  onJoin(client: Client, options: any) {
-    console.log(client.sessionId, "JOINED");
-    this.state.createPlayer(client.sessionId);
+  onJoin(client: Client, options: {tokenId: number}) {
+    console.log(client.sessionId, options.tokenId, "JOINED");
+    this.state.createPlayer(client.sessionId, options.tokenId);
   }
 
   onLeave(client: Client) {

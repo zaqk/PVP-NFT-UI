@@ -10,6 +10,8 @@ contract Entity is ERC721 {
   TuringHelper public turing;
   string public api;
 
+  uint256 public constant MAX_HEALTH = 5;
+
   // tokenId => health
   mapping(uint256 => uint256) public health;
 
@@ -20,6 +22,7 @@ contract Entity is ERC721 {
   constructor(address _turing, string memory _api) ERC721("Entity", "ENTITY") {
     turing = TuringHelper(_turing);
     api = _api;
+    tokenId = 1;
   }
 
   function tokenURI(uint256 _tokenId) public pure override returns (string memory) {
@@ -27,9 +30,10 @@ contract Entity is ERC721 {
   }
 
   function mint() external returns (uint256) {
-    _mint(msg.sender, tokenId++);
-    health[tokenId] = 5;
-    emit NewEntity(msg.sender, tokenId);
+    uint256 newTokenId = tokenId++;
+    _mint(msg.sender, newTokenId);
+    health[newTokenId] = MAX_HEALTH;
+    emit NewEntity(msg.sender, newTokenId);
   }
 
   function attack(uint256 _attacker, uint256 _target) external {
@@ -38,8 +42,8 @@ contract Entity is ERC721 {
     require(health[_target] > 0, "Target is dead");
 
     // turing proximity check
-    bytes memory payload = abi.enccode(_attacker, _target);
-    bool isInProximity = turing.TuringTx(api, payload);
+    bytes memory payload = abi.encodePacked(_attacker, _target);
+    bool isInProximity = _decode(turing.TuringTx(api, payload));
     require(isInProximity, "Attacker is out of range");
 
     health[_target]--;
@@ -47,5 +51,14 @@ contract Entity is ERC721 {
 
     if (health[_target] == 0) emit Dead(_target);
   }
+
+     function _decode(bytes memory data) internal pure returns (bool b){
+        assembly {
+            // Load the length of data (first 32 bytes)
+            let len := mload(data)
+            // Load the data after 32 bytes, so add 0x20
+            b := mload(add(data, 0x20))
+        }
+    }
 
 }

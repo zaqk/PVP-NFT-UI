@@ -1,7 +1,10 @@
 import * as PIXI from "pixi.js";
 import * as Viewport from "pixi-viewport";
 import { Room, Client } from "colyseus.js";
+import { BigNumber, ethers } from "ethers";
+
 import { State } from "../server/rooms/State";
+import { abi as entityAbi, address as entityAddress } from '../abis/Entity.json';
 
 const ENDPOINT = (process.env.NODE_ENV==="development")
     ? "ws://localhost:8080"
@@ -11,16 +14,14 @@ const WORLD_SIZE = 2000;
 
 export const lerp = (a: number, b: number, t: number) => (b - a) * t + a
 
-const onAttack = (event:any) => {
-    console.log(event)
-}
-
 class PlayerEntity extends PIXI.Graphics {
     id:string
+    tokenId:number
 }
 
 export class Application extends PIXI.Application {
     entities: { [id: string]: PlayerEntity } = {};
+    objects: { [id: string]: PIXI.Graphics } = {};
     currentPlayerEntity: PlayerEntity;
 
     client = new Client(ENDPOINT);
@@ -44,15 +45,13 @@ export class Application extends PIXI.Application {
         });
 
         // draw boundaries of the world
-        const boundaries = new PlayerEntity();
+        const boundaries = new PIXI.Graphics();
         boundaries.beginFill(0x000000);
         boundaries.drawRoundedRect(0, 0, WORLD_SIZE, WORLD_SIZE, 30);
         this.viewport.addChild(boundaries);
 
         // add viewport to stage
         this.stage.addChild(this.viewport);
-
-        this.connect();
 
         this.interpolation = false;
 
@@ -66,9 +65,26 @@ export class Application extends PIXI.Application {
     }
 
     async connect() {
-        this.room = await this.client.joinOrCreate<State>("arena");
+        const provider = new ethers.providers.Web3Provider(
+            (window as any).ethereum, 
+            'any'
+        )
+        const entityContract = new ethers.Contract(
+            entityAddress,
+            entityAbi,
+            provider.getSigner()
+        );
 
-        this.room.state.entities.onAdd = (entity, sessionId: string) => {
+        const tx = await entityContract.mint();
+        const rc = await tx.wait();
+        const event: {args: {tokenId: BigNumber} } = rc.events.find((event: { event: string; }) => event.event === 'NewEntity');
+        const tokenId = event.args.tokenId.toNumber();
+        console.log(`minted new entity: ${tokenId}`)
+
+        this.room = await this.client.joinOrCreate<State>("arena", { tokenId });
+
+        this.room.state.entities.onAdd = async (entity, sessionId: string) => {
+            console.log(entity);
             const color = (entity.radius < 10)
                 ? 0xff0000
                 : 0xFFFF0B;
@@ -81,23 +97,29 @@ export class Application extends PIXI.Application {
 
             graphics.x = entity.x;
             graphics.y = entity.y;
+            graphics.tokenId = entity.tokenId;
             graphics.interactive = true;
-            graphics.on('pointerup', (e) => {
+            graphics.on('pointerup', async (e) => {
                 e.stopPropagation() // prevent movement from viewport onclick
-                console.log(this.currentPlayerEntity)
-                console.log(e)
+                console.log('me', this.currentPlayerEntity)
+                console.log(`other player from event`, e.currentTarget)
                 console.log('clicked on player')
+                await entityContract.attack(
+                    BigNumber.from(this.currentPlayerEntity.tokenId), 
+                    BigNumber.from(e.currentTarget.tokenId)
+                );
             });
-            graphics.id = sessionId
-            this.viewport.addChild(graphics);
-
-            this.entities[sessionId] = graphics;
 
             // detecting current user
             if (sessionId === this.room.sessionId) {
+                graphics.tokenId = tokenId; // override tokenId from server (defaults to zero when none)
                 this.currentPlayerEntity = graphics;
                 this.viewport.follow(this.currentPlayerEntity);
             }
+            
+            // add object to state
+            this.viewport.addChild(graphics);
+            this.entities[sessionId] = graphics;
 
             entity.onChange = (changes) => {
                 const color = (entity.radius < 10) ? 0xff0000 : 0xFFFF0B;
