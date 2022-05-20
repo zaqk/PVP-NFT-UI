@@ -17,7 +17,6 @@ import path from "path";
 import { ArenaRoom } from "./rooms/ArenaRoom";
 
 import api from './api/index';
-import presence from "./presence";
 
 export const port = Number(process.env.PORT || 8080);
 export const endpoint = "localhost";
@@ -26,7 +25,6 @@ export let STATIC_DIR: string;
 
 const app = express();
 const gameServer = new Server({
-    presence,
     server: http.createServer(app)
 });
 
@@ -45,7 +43,10 @@ if (process.env.NODE_ENV !== "production") {
     STATIC_DIR = path.resolve(__dirname, "public");
 }
 
+
+app.use(express.json());
 app.use("/", express.static(STATIC_DIR));
+
 app.use(api);
 
 gameServer.listen(port);
