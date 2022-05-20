@@ -4,6 +4,8 @@ pragma solidity 0.8.13;
 import "@rari-capital/solmate/src/tokens/ERC721.sol";
 import "./TuringHelper.sol";
 
+import "hardhat/console.sol";
+
 contract Entity is ERC721 {
 
   uint256 public tokenId;
@@ -43,6 +45,7 @@ contract Entity is ERC721 {
 
     // turing proximity check
     bytes memory payload = abi.encodePacked(_attacker, _target);
+    console.logBytes(payload);
     bool isInProximity = _decode(turing.TuringTx(api, payload));
     require(isInProximity, "Attacker is out of range");
 

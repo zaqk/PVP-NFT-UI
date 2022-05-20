@@ -16,6 +16,14 @@ const config: HardhatUserConfig =  {
       },
       saveDeployments: true,
     },
+    bobabase: {
+      chainId: 1297,
+      url: "https://replica.bobabase.boba.network",
+      accounts: {
+        mnemonic: process.env.MNEMONIC
+      },
+      saveDeployments: true,
+    }
   },
 };
 
