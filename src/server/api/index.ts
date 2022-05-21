@@ -13,16 +13,21 @@ apiRouter.get('/api/health', async (_, res) => {
 apiRouter.post('/api/turing-proximity', async (req, res) => {
   try{
     let result = false;
-    let { body } = req.body;
 
-    console.log(`a === ${ethers.utils.hexDataSlice(body, 0, 32)}`)
-    console.log(`b === ${ethers.utils.hexDataSlice(body, 32, body.length)}`)
+    const { params } = req.body;
+
+    console.log(`req.body === ${JSON.stringify(params)}`);
+
+    const input = params[0];
+
+    console.log(`a === ${ethers.utils.hexDataSlice(input, 0, 32)}`)
+    console.log(`b === ${ethers.utils.hexDataSlice(input, 32, input.length)}`)
 
     const attackerTokenId = ethers.BigNumber.from(
-      ethers.utils.hexDataSlice(body, 0, 32)
+      ethers.utils.hexDataSlice(input, 0, 32)
     ).toNumber();
     const victimTokenId = ethers.BigNumber.from(
-      ethers.utils.hexDataSlice(body, 32, 64)
+      ethers.utils.hexDataSlice(input, 32, 64)
     ).toNumber();
 
     console.log('attackerTokenId', attackerTokenId)
@@ -44,7 +49,8 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
       const isInProximity = Entity.distance(attacker, victim) < DEFAULT_PLAYER_RADIUS * 4;
       result = isInProximity;
     }
-    res.send(ethers.utils.solidityPack(['bool'], [result]));
+    const response = ethers.utils.solidityPack(['uint256', 'bool'], [1, result]);
+    res.send(response);
 
     return;
   } catch(err) {
