@@ -55,7 +55,7 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
   } catch(err) {
     console.error(err);
     console.error('sending result === false to ensure contracts txs dont fail for testing purposes')
-    res.send({"result": false}); // less concerned about errors and more concerned about making turing calls work
+    res.send({"result": ethers.utils.solidityPack(['uint256', 'bool'], [1, false])}); // less concerned about errors and more concerned about making turing calls work
     return;
   }
 });
