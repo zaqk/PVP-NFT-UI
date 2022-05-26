@@ -54,6 +54,8 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     return;
   } catch(err) {
     console.error(err);
+    console.error('sending result === false to ensure contracts txs dont fail for testing purposes')
+    res.send({"result": false}); // less concerned about errors and more concerned about making turing calls work
     return;
   }
 });
