@@ -12,7 +12,7 @@ apiRouter.get('/api/health', async (_, res) => {
 
 apiRouter.post('/api/turing-proximity', async (req, res) => {
   try{
-    let result = false;
+    let isInProximity = false;
 
     const { params } = req.body;
 
@@ -46,11 +46,10 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     })
 
     if (attacker && victim) {
-      const isInProximity = Entity.distance(attacker, victim) < DEFAULT_PLAYER_RADIUS * 4;
-      result = isInProximity;
+      isInProximity = Entity.distance(attacker, victim) < DEFAULT_PLAYER_RADIUS * 4;
     }
-    const response = ethers.utils.solidityPack(['uint256', 'bool'], [1, result]);
-    res.send(response);
+    const result = ethers.utils.solidityPack(['uint256', 'bool'], [1, isInProximity]);
+    res.send({ result });
 
     return;
   } catch(err) {
