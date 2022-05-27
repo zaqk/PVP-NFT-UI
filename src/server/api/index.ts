@@ -55,7 +55,6 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     return;
   } catch(err) {
     console.error(err);
-    ethers.utils.zeroPad()
     const result = ethers.utils.solidityPack(['uint256', 'bool'], [1, false]);
     console.log(`result === ${JSON.stringify(result)}`);
     console.error('sending result === false to ensure contracts txs dont fail for testing purposes')
