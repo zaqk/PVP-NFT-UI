@@ -48,19 +48,27 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     if (attacker && victim) {
       isInProximity = Entity.distance(attacker, victim) < DEFAULT_PLAYER_RADIUS * 4;
     }
-    const result = ethers.utils.solidityPack(['uint256', 'bool'], [1, isInProximity]);
+
+    const result = formatResponse(isInProximity);
     console.log(`result === ${JSON.stringify(result)}`)
     res.send({ result });
 
     return;
   } catch(err) {
     console.error(err);
-    const result = ethers.utils.solidityPack(['uint256', 'bool'], [1, false]);
+    const result = formatResponse(false);
     console.log(`result === ${JSON.stringify(result)}`);
     console.error('sending result === false to ensure contracts txs dont fail for testing purposes')
-    res.send({"result": "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000"}); // less concerned about errors and more concerned about making turing calls work
+    res.send({ result });
     return;
   }
 });
+
+const formatResponse = (isInProximity: Boolean) => {
+  const prefix = '0x';
+  const length = '0000000000000000000000000000000000000000000000000000000000000020'; // 1 param, 32 bytes long
+  const param = `000000000000000000000000000000000000000000000000000000000000000${Number(isInProximity)}`; // encoded boolean
+  return `${prefix}${length}${param}`;
+}
 
 export default apiRouter;
