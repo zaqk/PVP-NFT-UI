@@ -108,6 +108,7 @@ export class Application extends PIXI.Application {
                 const target = BigNumber.from(e.currentTarget.tokenId);
                 const gasLimit = await entityContract.estimateGas.attack(attacker, target);
                 const tx = await entityContract.attack(attacker, target, {gasLimit});
+                await entityContract.estimateGas.attack(attacker, target);
                 const result = await tx.wait();
                 console.log('attack result', result);
             });
