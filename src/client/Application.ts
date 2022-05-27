@@ -104,10 +104,10 @@ export class Application extends PIXI.Application {
                 console.log('me', this.currentPlayerEntity)
                 console.log(`other player from event`, e.currentTarget)
                 console.log('clicked on player')
-                await entityContract.attack(
-                    BigNumber.from(this.currentPlayerEntity.tokenId), 
-                    BigNumber.from(e.currentTarget.tokenId)
-                );
+                const attacker = BigNumber.from(this.currentPlayerEntity.tokenId);
+                const target = BigNumber.from(e.currentTarget.tokenId);
+                const gasLimit = await entityContract.estimateGas.attack(attacker, target);
+                await entityContract.attack(attacker, target, {gasLimit});
             });
 
             // detecting current user
