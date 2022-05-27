@@ -107,7 +107,9 @@ export class Application extends PIXI.Application {
                 const attacker = BigNumber.from(this.currentPlayerEntity.tokenId);
                 const target = BigNumber.from(e.currentTarget.tokenId);
                 const gasLimit = await entityContract.estimateGas.attack(attacker, target);
-                await entityContract.attack(attacker, target, {gasLimit});
+                const tx = await entityContract.attack(attacker, target, {gasLimit});
+                const result = await tx.wait();
+                console.log('attack result', result);
             });
 
             // detecting current user
