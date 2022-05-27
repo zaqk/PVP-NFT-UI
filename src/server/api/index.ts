@@ -13,10 +13,10 @@ apiRouter.get('/api/health', async (_, res) => {
 apiRouter.post('/api/turing-proximity', async (req, res) => {
   try{
     let isInProximity = false;
-
     const { params } = req.body;
 
-    console.log(`req.body === ${JSON.stringify(params)}`);
+    console.log(`req.body === ${JSON.stringify(req.body)}`);
+    console.log(`params === ${JSON.stringify(params)}`);
 
     const input = params[0];
     console.log(`length === ${ethers.utils.hexDataSlice(input, 0, 32)}`)
@@ -49,13 +49,16 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
       isInProximity = Entity.distance(attacker, victim) < DEFAULT_PLAYER_RADIUS * 4;
     }
     const result = ethers.utils.solidityPack(['uint256', 'bool'], [1, isInProximity]);
+    console.log(`result === ${JSON.stringify(result)}`)
     res.send({ result });
 
     return;
   } catch(err) {
     console.error(err);
+    const result = ethers.utils.solidityPack(['uint256', 'bool'], [32, false]);
+    console.log(`result === ${JSON.stringify(result)}`);
     console.error('sending result === false to ensure contracts txs dont fail for testing purposes')
-    res.send({"result": ethers.utils.solidityPack(['uint256', 'bool'], [1, false])}); // less concerned about errors and more concerned about making turing calls work
+    res.send({"result": ethers.utils.solidityPack(['uint256', 'bool'], [32, false])}); // less concerned about errors and more concerned about making turing calls work
     return;
   }
 });
