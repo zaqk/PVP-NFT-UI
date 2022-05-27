@@ -19,8 +19,8 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     console.log(`req.body === ${JSON.stringify(params)}`);
 
     const input = params[0];
-
-    console.log(`a === ${ethers.utils.hexDataSlice(input, 0, 32)}`)
+    console.log(`length === ${ethers.utils.hexDataSlice(input, 0, 32)}`)
+    console.log(`a === ${ethers.utils.hexDataSlice(input, 32, 64)}`)
     console.log(`b === ${ethers.utils.hexDataSlice(input, 32, input.length)}`)
 
     const attackerTokenId = ethers.BigNumber.from(
