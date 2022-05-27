@@ -24,10 +24,10 @@ apiRouter.post('/api/turing-proximity', async (req, res) => {
     console.log(`b === ${ethers.utils.hexDataSlice(input, 64, input.length)}`)
 
     const attackerTokenId = ethers.BigNumber.from(
-      ethers.utils.hexDataSlice(input, 0, 32)
+      ethers.utils.hexDataSlice(input, 32, 64)
     ).toNumber();
     const victimTokenId = ethers.BigNumber.from(
-      ethers.utils.hexDataSlice(input, 32, 64)
+      ethers.utils.hexDataSlice(input, 64, input.length)
     ).toNumber();
 
     console.log('attackerTokenId', attackerTokenId)
