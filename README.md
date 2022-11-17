@@ -1,4 +1,4 @@
-# Colyseus + PixiJS contract playground
+# PVP NFT UI Proof of Concept
 
 ## Running locally
 
